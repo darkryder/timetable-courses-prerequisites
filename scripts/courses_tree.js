@@ -28,6 +28,10 @@ var courses_tree = function(){
             return courses[code]; // allow undefined to be sent up
         },
 
+        get_course_list: function(){
+            return courses;
+        },
+
         mark_course_done: function(code){
             var course = this.get_course(code);
             if (course !== undefined){
@@ -44,9 +48,28 @@ var courses_tree = function(){
             return false;
         },
 
+        mark_course_not_done: function(code){
+            var course = this.get_course(code);
+            if (course !== undefined){
+                done_courses[code] = false;
+                return true;
+            }
+            return false;
+        },
+
+        is_course_done: function(code){
+            var course = this.get_course(code);
+            if (course){
+                if (done_courses[code]){  // also skips undefined to false
+                    return true;
+                }
+            }
+            return false;
+        },
+
         is_course_possible: function(code){
             var course = this.get_course(code),
-                prereqs = course.prereqs || [],
+                prereqs = (course && course.prereqs) || [],
                 that = this;
             if (course === undefined){
                 throw {
