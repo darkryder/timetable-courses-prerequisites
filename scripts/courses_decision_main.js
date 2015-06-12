@@ -14,7 +14,7 @@ var tree = function(){
         var courses = [];
         for(var i = 0; i < course_data.length; i++){
             if (tree.is_course_possible(course_data[i].code)){
-                courses.push(course_data[i]);
+                courses.push(course_data[i].code);
             }
         }
         return courses;
@@ -45,75 +45,98 @@ var tree = function(){
         },
     }
 }();
-
-$(function(){ // on dom ready
+// on dom ready, draw the digraph
+$(function(){
 
     var courses = tree.get_course_list();
-    var nodes = [];
-    var edges = [];
+    var possible_courses = []
+    var that = tree.get_possible_courses();
 
-    for(code in courses){
-        course = courses[code];
-        el = {data:{
-                id: course.code,
-            }
-        };
-        if (course.prereqs === undefined) el.group = "independent"
-        nodes.push({
-            data: {
-                id: course.code,
-            }
+    var svg = d3.select("svg"),
+        inner = svg.select("g"),
+        zoom = d3.behavior.zoom().on("zoom", function() {
+            inner.attr("transform", "translate(" + d3.event.translate + ")" +
+                "scale(" + d3.event.scale + ")");
         });
-        if (course.prereqs !== undefined){
-            for(pre_code in course.prereqs){
-                edges.push({
-                    data: {
-                        id: code + " - " + course.prereqs[pre_code],
-                        weight: 5,
-                        source: course.prereqs[pre_code],
-                        target: code
-                    }
-                });
-            }
-        }
-    }
-    var cy = cytoscape({
-      container: $("#cy")[0],
-
-      style: cytoscape.stylesheet()
-        .selector('node')
-          .css({
-            'content': 'data(id)'
-          })
-        .selector('edge')
-          .css({
-            'target-arrow-shape': 'triangle',
-            'width': 4,
-            'line-color': '#ddd',
-            'target-arrow-color': '#ddd'
-          })
-        .selector('.highlighted')
-          .css({
-            'background-color': '#61bffc',
-            'line-color': '#61bffc',
-            'target-arrow-color': '#61bffc',
-            'transition-property': 'background-color, line-color, target-arrow-color',
-            'transition-duration': '0.5s'
-          }),
-
-      elements: {
-          nodes: nodes,
-          edges: edges
-        },
-
-      layout: {
-        name: 'random',
-        fit: true,
-        directed: true,
-        roots: '#a',
-        padding: 10
-      }
+    svg.call(zoom);
+    var render = new dagreD3.render();
+    var g = new dagreD3.graphlib.Graph();
+    g.setGraph({
+        nodesep:75,
+        ranksep: 50,
+        rankdir: "LR",
+        marginx: 20,
+        marginy: 20
     });
 
-    window.cy = cy;
+    function draw(isUpdate){
+        for (var code in courses){
+
+            var course = courses[code];
+            var className = "course";
+            // yes, n**2
+            var possible = ($.inArray(code, possible_courses) !== -1)
+            className += ((possible === true) ? " sambhav": " asambhav");
+
+            var html = "<div>";
+            html += "<span class=coursecode>" + code + "</span>";
+            html += "<span class=coursetitle>" + course.title + "</span>";
+            html += "</div>";
+            g.setNode(code,{
+                labelType: "html",
+                label: html,
+                rx: 5,
+                ry: 5,
+                padding: 0,
+                class: className
+            });
+
+            if (course.prereqs !== undefined){
+                for(var i in course.prereqs){
+                    prereq = course.prereqs[i];
+
+                    if ($.inArray(prereq, g.nodes()) === -1) continue;
+                    // I HATE HATE the courses repository.
+                    // why couldn't you keep the repo updated.
+                    // This bug occurs when a course has a prerequisite
+                    // but the repo doesn't have the information of that
+                    // prerequisite course. So, it tries to add an edge
+                    // to a non existent node.
+                    // Took me an hour -_-
+
+                    var style = {
+                        width: 40,
+                        lineInterpolate: 'basis'
+                    };
+                    if (possible === true){
+                        style.style = "fill: #f66;"
+                    }
+                    g.setEdge(prereq, code, style);
+                }
+            }
+
+
+        }
+        // console.log(g.nodes())
+        // console.log(g.edges())
+
+        inner.call(render, g);
+
+        var zoomScale = zoom.scale();
+        var graphWidth = g.graph().width + 80;
+        var graphHeight = g.graph().height + 40;
+        var width = parseInt(svg.style("width").replace(/px/, ""));
+        var height = parseInt(svg.style("height").replace(/px/, ""));
+        zoomScale = Math.min(width / graphWidth, height / graphHeight);
+        var translate = [(width/2) - ((graphWidth*zoomScale)/2), (height/2) - ((graphHeight*zoomScale)/2)];
+        zoom.translate(translate);
+        zoom.scale(zoomScale);
+        zoom.event(isUpdate ? svg.transition().duration(500) : d3.select("svg"));
+    }
+
+
+    setInterval(function(){
+        draw(true);
+    }, 1000)
+
 }); // on dom ready
