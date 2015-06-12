@@ -49,8 +49,8 @@ var tree = function(){
 // on dom ready, draw the digraph
 $(function(){
     var courses = tree.get_course_list();
-    var possible_courses = []
-    var that = tree.get_possible_courses();
+    var possible_courses = tree.get_possible_courses();
+    var that = this;
 
     var svg = d3.select("svg"),
         inner = svg.select("g"),
@@ -70,21 +70,27 @@ $(function(){
     });
 
     var update_tree_info = function(){
+        var _ = g.nodes()
+        for(var i = 0; i < _.length; i++){
+            g.removeNode(_[i]);
+        }
+        var _ = g.edges()
+        for(var i = 0; i < _.length; i++){
+            g.removeEdge(_[i]);
+        }
+        possible_courses = tree.get_possible_courses();
         for (var code in courses){
-            // tree.toggle_course_done(code, function(){
-            //     console.log(code + "done");
-            // }, function(){
-            //     console.log(code + "not done");
-            // });
             var course = courses[code];
             var className = "course";
             // yes, n**2
             var possible = ($.inArray(code, possible_courses) !== -1)
             className += ((possible === true) ? " sambhav": " asambhav");
-
+            if (courses_tree.is_course_done(code)){
+                className += " complete";
+            }
             var html = "<div>";
             html += "<span class=coursecode>" + code + "</span>";
-            html += "<span class=coursetitle>" + course.title + "</span>";
+            html += "-<span class=coursetitle>" + course.title + "</span>";
             html += "</div>";
             g.setNode(code,{
                 labelType: "html",
@@ -110,37 +116,61 @@ $(function(){
 
                     var style = {
                         width: 40,
-                        lineInterpolate: 'basis'
+                        lineInterpolate: 'basis',
+                        // style: "stroke: #f66; stroke-width: 3px; stroke-dasharray: 5, 5;"
                     };
-                    if (possible === true){
-                        style.style = "fill: #f66;"
-                    }
+                    // if (possible === true){
+                    //     style.style = "fill: #f66;"
+                    // }
                     g.setEdge(prereq, code, style);
                 }
             }
         }
-        console.log("Updated");
+        console.log("Updated tree");
     }
 
     update_tree_info();
 
-    function draw(isUpdate){
 
+    function draw(isUpdate){
         inner.call(render, g);
 
-        var zoomScale = zoom.scale();
-        var graphWidth = g.graph().width + 80;
-        var graphHeight = g.graph().height + 40;
-        var width = parseInt(svg.style("width").replace(/px/, ""));
-        var height = parseInt(svg.style("height").replace(/px/, ""));
-        zoomScale = Math.min(width / graphWidth, height / graphHeight);
-        var translate = [(width/2) - ((graphWidth*zoomScale)/2), (height/2) - ((graphHeight*zoomScale)/2)];
-        zoom.translate(translate);
-        zoom.scale(zoomScale);
-        zoom.event(isUpdate ? svg.transition().duration(500) : d3.select("svg"));
+        if (isUpdate){
+            var zoomScale = zoom.scale();
+            var graphWidth = g.graph().width + 80;
+            var graphHeight = g.graph().height + 40;
+            var width = parseInt(svg.style("width").replace(/px/, ""));
+            var height = parseInt(svg.style("height").replace(/px/, ""));
+            zoomScale = Math.min(width / graphWidth, height / graphHeight);
+            var translate = [(width/2) - ((graphWidth*zoomScale)/2), (height/2) - ((graphHeight*zoomScale)/2)];
+            zoom.translate(translate);
+            zoom.scale(zoomScale);
+            zoom.event(isUpdate ? svg.transition().duration(500) : d3.select("svg"));
+        }
     }
 
     draw(true);
+
+    var selections = inner.selectAll("g.node");
+    selections.on('click', function (d) {
+        tree.toggle_course_done(d, function(result){
+            if (result.done === true) console.log("You've marked completed -> " + d);
+            else console.log("You've marked incomplete -> " + d);
+        }, function(){
+            throw {
+                name: "RunTimeError",
+                message: "Could not get course with code: " + d
+            }
+        })
+        update_tree_info();
+        draw(false)
+    });
+
+
+    $(selections).hover(function(d){
+        console.log(g.inEdges(d));
+    })
+
     // setInterval(function(){
     //     draw(true);
     // }, 10000)
