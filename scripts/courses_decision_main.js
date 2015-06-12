@@ -1,5 +1,6 @@
 var tree = function(){
-    var tree = courses_tree;
+    var tree = courses_tree,
+        that = this;
     var course_data = []
     $.getJSON("courses.json", function(data){
         course_data = data;
@@ -47,7 +48,6 @@ var tree = function(){
 }();
 // on dom ready, draw the digraph
 $(function(){
-
     var courses = tree.get_course_list();
     var possible_courses = []
     var that = tree.get_possible_courses();
@@ -69,9 +69,13 @@ $(function(){
         marginy: 20
     });
 
-    function draw(isUpdate){
+    var update_tree_info = function(){
         for (var code in courses){
-
+            // tree.toggle_course_done(code, function(){
+            //     console.log(code + "done");
+            // }, function(){
+            //     console.log(code + "not done");
+            // });
             var course = courses[code];
             var className = "course";
             // yes, n**2
@@ -114,11 +118,13 @@ $(function(){
                     g.setEdge(prereq, code, style);
                 }
             }
-
-
         }
-        // console.log(g.nodes())
-        // console.log(g.edges())
+        console.log("Updated");
+    }
+
+    update_tree_info();
+
+    function draw(isUpdate){
 
         inner.call(render, g);
 
@@ -134,9 +140,9 @@ $(function(){
         zoom.event(isUpdate ? svg.transition().duration(500) : d3.select("svg"));
     }
 
-
-    setInterval(function(){
-        draw(true);
-    }, 1000)
+    draw(true);
+    // setInterval(function(){
+    //     draw(true);
+    // }, 10000)
 
 }); // on dom ready

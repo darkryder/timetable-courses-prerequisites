@@ -39,7 +39,7 @@ var courses_tree = function(){
                     done_courses[code] = true;
                     if(course.prereqs && course.prereqs.constructor === Array){
                         for(var i = 0; i < course.prereqs.length; i++){
-                            mark_course_done(course.prereqs[i]);
+                            this.mark_course_done(course.prereqs[i]);
                         }
                         return true;
                     }
