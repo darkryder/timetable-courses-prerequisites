@@ -54,10 +54,11 @@ $(function(){
 
     var svg = d3.select("svg"),
         inner = svg.select("g"),
-        zoom = d3.behavior.zoom().on("zoom", function() {
+        zoom  = d3.behavior.zoom().
+                on("zoom", function() {
             inner.attr("transform", "translate(" + d3.event.translate + ")" +
                 "scale(" + d3.event.scale + ")");
-        });
+        }).scaleExtent([0, 2]);
     svg.call(zoom);
     var render = new dagreD3.render();
     var g = new dagreD3.graphlib.Graph();
