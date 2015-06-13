@@ -1,11 +1,86 @@
-body {
-  font: 14px helvetica neue, helvetica, arial, sans-serif;
-}
 
-#cy {
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  left: 0;
-  top: 0;
-}
+  body {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI",Frutiger,Frutiger Linotype,"Dejavu Sans",Helvetica Neue,Arial,sans-serif;
+    background: #111;
+  }
+
+  .tree {
+    width: 100%;
+    height: 100%;
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .tree text {
+    font-weight: 400;
+    font-size: 14px;
+  }
+
+  .tree .node rect {
+    stroke-width: 2px;
+    stroke: #bbb;
+  }
+
+  .tree .node * {
+    padding: 6px 6px;
+  }
+
+  .tree .edgePath path {
+    stroke: #999;
+    stroke-width: 2.5px;
+    fill: #999;
+    -webkit-transition: stroke 0.2s linear;
+    -moz-transition: stroke 0.2s linear;
+    -ms-transition: stroke 0.2s linear;
+    -o-transition: stroke 0.2s linear;
+    transition: stroke 0.2s linear;
+    -webkit-transition: stroke-width 0.2s linear;
+    -moz-transition: stroke-width 0.2s linear;
+    -ms-transition: stroke-width 0.2s linear;
+    -o-transition: stroke-width 0.2s linear;
+    transition: stroke-width 0.2s linear;
+  }
+.tree .edgePath path:hover {
+    stroke: #22a;
+    stroke-width: 5px;
+  }
+
+
+  .course {
+    padding: 5px 5px 5px 5px;
+  }
+
+  .sambhav {
+    fill: #2a2;
+  }
+
+  .asambhav {
+    fill: #a22;
+  }
+
+  .complete {
+    fill: #397770;
+  }
+
+  .searchresult {
+    fill: #F3FF30;
+  }
+
+  .coursecode {
+    font-weight: 800;
+  }
+
+  .coursetitle {
+    font-weight: 400;
+  }
