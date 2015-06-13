@@ -3,14 +3,30 @@
 <head>
     <title>Course Prerequisites</title>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet"/>
 </head>
 <body>
     <div class="tree">
         <svg><g/></svg>
     </div>
+    <!-- Yeahh baby!! Web 1.0 -->
+    <div id="left-panel">
+        <div style="padding-left: 50%; padding-top:3%">
+            <div class="circle" style="background-color: #2a2">
+            </div>
+            Allowed
+            <div class="circle" style="margin-top: 10px; background-color: #a22">
+            </div>
+            Not allowed
+            <div class="circle" style="margin-top: 10px; background-color: #397770">
+            </div>
+            Completed
+        </div>
+    </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
     <script src="http://cpettitt.github.io/project/dagre-d3/latest/dagre-d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script src="scripts/courses_tree.js"></script>
     <script src="scripts/courses_decision_main.js"></script>
 </body>

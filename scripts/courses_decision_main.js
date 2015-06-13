@@ -189,6 +189,8 @@ $(function(){
             if (window.course_search_query !== "") {
                 var query = window.course_search_query;
                 for(var code in courses){
+                    // I wonder if there's a way to make
+                    // this more ineffecient
                     if (code.indexOf(query) !== -1 ||
                         courses_tree.get_course(code).title.
                         toUpperCase().indexOf(query) !== -1){
@@ -207,3 +209,25 @@ $(function(){
     // }, 10000)
 
 }); // on dom ready
+
+$(function(){
+    $("#left-panel").hover(function(){
+        $(this).toggleClass("show");
+    });
+
+    toastr.options = {
+        "closeButton": false,
+        "debug": false,
+        "positionClass": "toast-top-full-width",
+        "onclick": null,
+        "showDuration": "1000",
+        "hideDuration": "1000",
+        "timeOut": "10000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    };
+    toastr.info("Click on courses to mark them completed, and open up further options. Start typing to search for courses.");
+});

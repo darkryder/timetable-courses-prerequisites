@@ -51,11 +51,11 @@
     -o-transition: stroke-width 0.2s linear;
     transition: stroke-width 0.2s linear;
   }
+
 .tree .edgePath path:hover {
     stroke: #22a;
     stroke-width: 5px;
   }
-
 
   .course {
     padding: 5px 5px 5px 5px;
@@ -83,4 +83,35 @@
 
   .coursetitle {
     font-weight: 400;
+  }
+
+  #left-panel {
+    width: 30%;
+    height: 80%;
+    border: 5px solid #a22;
+    background-color: #fff;
+    position: fixed;
+    top: 10%;
+    left: -28%;
+    border-radius: 0 1em 1em 0;
+    padding: 5px;
+    -webkit-transition: all 0.5s ease-in-out;
+    -ms-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    -mozkit-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+  }
+
+  #left-panel:hover {
+    left: -15%;
+  }
+
+  #left-panel.show {
+    left: -15%;
+  }
+
+  .circle{
+     width: 30px;
+     height: 30px;
+     border-radius: 50%;
   }
