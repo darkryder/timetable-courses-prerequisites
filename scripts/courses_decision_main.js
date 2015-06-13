@@ -72,6 +72,7 @@ $(function(){
 
     var update_tree_info = function(){
         var _ = g.nodes()
+        var results = window.search_results || [];
         for(var i = 0; i < _.length; i++){
             g.removeNode(_[i]);
         }
@@ -88,6 +89,9 @@ $(function(){
             className += ((possible === true) ? " sambhav": " asambhav");
             if (courses_tree.is_course_done(code)){
                 className += " complete";
+            }
+            if ($.inArray(code, results) !== -1){
+                className += " searchresult";
             }
             var html = "<div>";
             html += "<span class=coursecode>" + code + "</span>";
@@ -135,7 +139,6 @@ $(function(){
 
     function draw(isUpdate){
         inner.call(render, g);
-
         if (isUpdate){
             var zoomScale = zoom.scale();
             var graphWidth = g.graph().width + 80;
@@ -155,8 +158,8 @@ $(function(){
     var selections = inner.selectAll("g.node");
     selections.on('click', function (d) {
         tree.toggle_course_done(d, function(result){
-            if (result.done === true) console.log("You've marked completed -> " + d);
-            else console.log("You've marked incomplete -> " + d);
+            // if (result.done === true) console.log("You've marked completed -> " + d);
+            // else console.log("You've marked incomplete -> " + d);
         }, function(){
             throw {
                 name: "RunTimeError",
@@ -167,9 +170,36 @@ $(function(){
         draw(false)
     });
 
-
-    $(selections).hover(function(d){
-        console.log(g.inEdges(d));
+    window.course_search_query = "";
+    window.search_results = []
+    $(document).keypress(function(e){
+        e = e || window.event;
+        if (e.keyCode == 27){
+            window.course_search_query = "";
+            window.search_results = []
+        } else{
+            if (e.keyCode == 8){
+                _ = window.course_search_query;
+                window.course_search_query = _.slice(0, -1);
+            } else {
+                ch = String.fromCharCode(e.which).toUpperCase();
+                window.course_search_query = window.course_search_query + ch;
+            }
+            var results = [];
+            if (window.course_search_query !== "") {
+                var query = window.course_search_query;
+                for(var code in courses){
+                    if (code.indexOf(query) !== -1 ||
+                        courses_tree.get_course(code).title.
+                        toUpperCase().indexOf(query) !== -1){
+                        results.push(code);
+                    }
+                }
+            }
+            window.search_results = results;
+        }
+        update_tree_info();
+        draw();
     })
 
     // setInterval(function(){
