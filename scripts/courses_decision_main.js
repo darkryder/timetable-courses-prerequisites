@@ -1,12 +1,14 @@
 var tree = function(){
     var tree = courses_tree,
-        that = this;
+        that = this,
+        fetched = false;
     var course_data = []
     $.getJSON("courses.json", function(data){
         course_data = data;
         for(var i = 0; i < data.length; i++){
             tree.add_course(data[i]);
         }
+        fetched = true;
     });
 
     // what's the worst complexity possible?
@@ -44,11 +46,30 @@ var tree = function(){
         get_course_list: function(){
             return tree.get_course_list();
         },
+
+        are_courses_fetched: function(){
+            return fetched;
+        }
     }
 }();
 // on dom ready, draw the digraph
 $(function(){
-    var courses = tree.get_course_list();
+    var fetch_count = 0,
+        fetch = false,
+        courses = {};
+
+    function fetch_blocking(){
+        courses = tree.get_course_list();
+        if (courses.length !== 0) return;
+        if (fetch_count < 5){
+            setTimeout(fetch_blocking, 400);
+        }
+        if (fetch_count >= 5){
+            courses = {};
+        }
+    }
+    fetch_blocking();
+
     var possible_courses = tree.get_possible_courses();
     var that = this;
 
